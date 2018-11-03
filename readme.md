@@ -1,14 +1,9 @@
-# Steelseries Gamesense Minecraft #
+SSE3 Minecraft Mod
+==================
 
-## Minecraft versions ##
-### Beta ###
-- 1.12.2-dev [[Repo]()] | [[Curse](https://minecraft.curseforge.com/projects/steelseries-gamesense/files)] | [[changelog]()]
+This is the project set up for the SSE3 game events Minecraft Mod.
+It uses Minecraft Forge for Minecraft 1.8.9
+To set up for building, running, debugging with eclipse, run:
+ gradlew setupDecompWorkspace eclipse
 
-### Stable ###
-- 1.12.2 [[Repo]()] | [[Curse](https://minecraft.curseforge.com/projects/steelseries-gamesense/files)] | [[changelog]()]
-- 1.11.2 [[Repo]()] | [[Curse](https://minecraft.curseforge.com/projects/steelseries-gamesense/files)] | [[changelog]()]
-- 1.10.2 [[Repo]()] | [[Curse](https://minecraft.curseforge.com/projects/steelseries-gamesense/files)] | [[changelog]()]
-- 1.8.9  [[Repo]()] | [[Curse](https://minecraft.curseforge.com/projects/steelseries-gamesense/files)] | [[changelog]()]
-
-## Steelseries GameSense Engine ##
-Go to [Steelseries](https://steelseries.com/engine) to download the latest version.
+See further installation instructions at http://www.minecraftforge.net/wiki/Installation/Source
