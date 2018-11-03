@@ -1,5 +1,8 @@
-package com.sse3.gamesense;
+package com.sse3.gamesense.internal;
 
+import com.sse3.gamesense.GameSenseMod;
+import com.sse3.gamesense.config.LoadConfig;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,8 +19,9 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.io.File;
 
-public class GameSenseEventReceiver
+public class EventReceiver
 {
 
     private float lastHealth;
@@ -26,13 +30,17 @@ public class GameSenseEventReceiver
     private boolean isStarted;
     private Minecraft _mcInst;
     private long lastTickMS;
-    private long timeOfDay;
+    //private long timeOfDay;
     private int lastAir;
     private EnumFacing lastFacing;
     private ItemStack lastHeldItem;
     private GameSenseMod gsmInst;
+    public static LoadConfig config;
+    static {
+        config = new LoadConfig(new File(Launch.minecraftHome, "/config/GameSense Mod.cfg"));
+    }
 
-    public GameSenseEventReceiver(Minecraft mcInst)
+    public EventReceiver(Minecraft mcInst)
     {
         this._mcInst = mcInst;
         gsmInst = null;
@@ -45,7 +53,7 @@ public class GameSenseEventReceiver
         lastFoodLevel = 0;
         isHungry = false;
         isStarted = false;
-        timeOfDay = 0;
+        //timeOfDay = 0;
         lastAir = 0;
         lastFacing = EnumFacing.NORTH;
         lastHeldItem = null;
@@ -59,7 +67,7 @@ public class GameSenseEventReceiver
         this.isHungry = false;
         this.isStarted = false;
         this.lastTickMS = 0;
-        this.timeOfDay = 0;
+        //this.timeOfDay = 0;
         this.lastAir = 0;
         this.lastFacing = EnumFacing.NORTH;
         this.lastHeldItem = null;
@@ -70,7 +78,6 @@ public class GameSenseEventReceiver
     {
         if (!this.isStarted)
             return;
-
         long curElapsed = System.currentTimeMillis() - this.lastTickMS;
         // Update threshold. Periodically update all values at this rate, in milliseconds
         long updateThreshold = 1000;
@@ -239,7 +246,7 @@ public class GameSenseEventReceiver
                     }
                 }
 
-                if (!heldItemType.equals("")) { // heldItemType is always true
+                if (!heldItemType.isEmpty()) { // heldItemType is always true
                     gsmInst.SendGameEvent("TOOL", heldItemType, player);
                     gsmInst.SendGameEvent("TOOLMATERIAL", heldItemMaterialName, player);
                     gsmInst.SendGameEvent("TOOLDURABILITY", heldItemDurability, player);
@@ -251,10 +258,10 @@ public class GameSenseEventReceiver
                 }
             }
 
-            if (doPeriodicUpdate || this._mcInst.world.getWorldTime() != this.timeOfDay) {
-                this.timeOfDay = this._mcInst.world.getWorldTime();
-                //sse3Inst.SendGameEvent("TIMEOFDAY", (int)(this.timeOfDay), player);
-            }
+            //if (doPeriodicUpdate || this._mcInst.world.getWorldTime() != this.timeOfDay) {
+            //    this.timeOfDay = this._mcInst.world.getWorldTime();
+            //    sse3Inst.SendGameEvent("TIMEOFDAY", (int)(this.timeOfDay), player);
+            //}
         }
     }
 
@@ -264,13 +271,6 @@ public class GameSenseEventReceiver
         // Just send START event
         gsmInst.SendGameEvent("START", 1, null);
         this.isStarted = true;
-    }
 
-    @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onWorldUnload(WorldEvent.Unload event)
-    {
-        // Just send FINISH event
-        gsmInst.SendGameEvent("FINISH", 1, null);
-        this.reset();
     }
 }
