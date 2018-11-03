@@ -40,6 +40,7 @@ public class GameSenseMod
     static final String MODNAME = "%MODNAME%";
     static final String VERSION = "%VERSION%";
 
+
     // Tell Forge what instance to use.
     @Instance(value = GameSenseMod.MODID)
     public static GameSenseMod instance;
