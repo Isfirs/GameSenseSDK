@@ -1,10 +1,16 @@
 package com.sse3.gamesense;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
 
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
@@ -14,19 +20,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.json.JSONObject;
-import org.json.JSONException;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 @Mod(modid = GameSenseMod.MODID,
         name = GameSenseMod.MODNAME,
@@ -43,30 +44,35 @@ public class GameSenseMod
     @Instance(value = GameSenseMod.MODID)
     public static GameSenseMod instance;
 
+    //private HttpURLConnection sse3Connection = null;
     private CloseableHttpClient sseClient = null;
     private HttpPost ssePost = null;
     private Boolean isConnected = false;
     private long lastTick = 0;
 
-    public void SendGameEvent(String eventName, int data, EntityPlayer player) {
+    public void SendGameEvent(String eventName, int data, EntityPlayer player)
+    {
         JSONObject eventData = new JSONObject();
         eventData.put("value", data);
         SendGameEvent(eventName, eventData, player);
     }
 
-    public void SendGameEvent(String eventName, Boolean data, EntityPlayer player) {
+    public void SendGameEvent(String eventName, Boolean data, EntityPlayer player)
+    {
         JSONObject eventData = new JSONObject();
         eventData.put("value", data);
         SendGameEvent(eventName, eventData, player);
     }
 
-    public void SendGameEvent(String eventName, String data, EntityPlayer player) {
+    public void SendGameEvent(String eventName, String data, EntityPlayer player)
+    {
         JSONObject eventData = new JSONObject();
         eventData.put("value", data);
         SendGameEvent(eventName, eventData, player);
     }
 
-    public void SendGameEvent(String eventName, JSONObject dataObject, EntityPlayer player) {
+    private void SendGameEvent(String eventName, JSONObject dataObject, EntityPlayer player)
+    {
         JSONObject event = new JSONObject();
         event.put("game", "SSMCMOD");
         event.put("event", eventName);
@@ -75,7 +81,8 @@ public class GameSenseMod
         executePost(event.toString(), player);
     }
 
-    private void executePost(String urlParameters, EntityPlayer player) {
+    private void executePost(String urlParameters, EntityPlayer player)
+    {
         try {
 
             // If we're not connected, retry after a certain amount of time has elapsed.
@@ -109,7 +116,7 @@ public class GameSenseMod
             // Couldn't actually connect.
             isConnected = false;
             if(player != null) {
-                player.addChatMessage(new TextComponentString("There was an error connecting to SteelSeries Engine 3"));
+                player.sendMessage(new TextComponentString("There was an error connecting to SteelSeries Engine 3"));
             }
         } catch (Exception e) {
             // Likely a socket timeout w/ "Read timed out" which is fine, we just want to set & forget.
@@ -117,8 +124,10 @@ public class GameSenseMod
         }
     }
 
-    private void ConnectToSSE3() {
-        String jsonAddress = "";
+    private void ConnectToSSE3()
+    {
+        String jsonAddress;
+        jsonAddress = "";
         // First open the config file to see what port to connect to.
         // Try to open Windows path one first
         try {
