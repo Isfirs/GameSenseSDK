@@ -1,5 +1,14 @@
 # Changelog Gamesense #
 ## Minecraft 1.12.2 DEV ##
+### 1.12.8
+- Fixed Issue (config not saved correctly)
+
+### 1.12.7
+- Updated to latest forge
+- Updated JSON library to latest version
+- Added [Darkhax:Tips](https://minecraft.curseforge.com/projects/tips) mod for information about gamesense when installed
+
+### 1.12.6
 - Added updatecheck function (can be disabled in mod settings)
 - Added enable/disable mod in mod config
 - reworked the mod
