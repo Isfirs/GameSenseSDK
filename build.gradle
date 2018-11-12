@@ -16,6 +16,7 @@ apply plugin: 'maven'
 
 String modversion = "1.12.6"
 String minecraftversion = "1.12.2"
+String forgeversion = "14.23.5.2772"
 String modid = "gamesense"
 String modname = "GameSense Mod"
 
@@ -40,7 +41,7 @@ compileJava
 
 minecraft
         {
-            version = "1.12.2-14.23.5.2772"
+            version = "${minecraftversion}-${forgeversion}"
             runDir = "run"
 
             // the mappings can be changed at any time, and must be in the following format.
@@ -74,19 +75,22 @@ dependencies
         {
             // you may put jars on which you depend on in ./libs
             // or you may define them like so..
-
+            compile files("libs/Tips-1.12.2-1.0.1.jar")
             //
             // Edit 29/12/2017: import the json library in the jar
             // no dependency files are needed
             //
-            compile group: 'org.json', name: 'json', version: '20171018'
-            includeInJar group: 'org.json', name: 'json', version: '20171018'
+            compile group: 'org.json', name: 'json', version: '20180813'
+            includeInJar group: 'org.json', name: 'json', version: '20180813'
         }
 
 jar
         {
             // put it in the root of the jar
             from configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
+            manifest{
+                attributes 'FMLAT': 'gamesense_at.cfg'
+            }
         }
 
 processResources

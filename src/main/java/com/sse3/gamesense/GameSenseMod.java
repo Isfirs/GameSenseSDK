@@ -1,18 +1,16 @@
 package com.sse3.gamesense;
 
-import com.sse3.gamesense.config.LoadConfig;
+import com.sse3.gamesense.config.ModConfig;
 import com.sse3.gamesense.internal.EventHandler;
 import com.sse3.gamesense.internal.EventReceiver;
 import com.sse3.gamesense.lib.VersionChecker;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.text.TextComponentString;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -38,11 +36,14 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.Scanner;
 
+import net.darkhax.tips.TipsAPI;
+
 @Mod(modid = GameSenseMod.MODID,
         name = GameSenseMod.MODNAME,
         version = GameSenseMod.VERSION,
         acceptedMinecraftVersions = GameSenseMod.MINECRAFTVERSIONS,
-        updateJSON = GameSenseMod.JSON
+        updateJSON = GameSenseMod.JSON,
+        guiFactory = GameSenseMod.GUIFACTORY
 )
 
 public class GameSenseMod
@@ -51,16 +52,15 @@ public class GameSenseMod
     public static final String MODNAME = "%MODNAME%";
     public static final String VERSION = "%VERSION%";
     public static final String MINECRAFTVERSIONS = "%MINECRAFTVERSIONS%";
-    public static final boolean beta = true;
+    public static final boolean beta = false;
     public static final String JSON = "https://lateur.pro/mods/gamesense/latest.json";
-    private static final int CONFIG_VERSION = 1;
+    static final Boolean isOtherModLoaded = Loader.isModLoaded("tips");
+    public static final String GUIFACTORY = "com.sse3.gamesense.lib.ModGuiFactory";
 
-
-    @Instance(value = GameSenseMod.MODID)
+    @Instance(MODID)
     public static GameSenseMod instance;
     public static File minecraftDir;
     public static String currentMcVersion;
-    public static Object Player;
 
     //private HttpURLConnection sse3Connection = null;
     private CloseableHttpClient sseClient = null;
@@ -69,11 +69,6 @@ public class GameSenseMod
     private long lastTick = 0;
 
     public static Logger logger = LogManager.getLogger("GameSense Mod");
-    public static LoadConfig config;
-
-    static {
-        config = new LoadConfig(new File(Launch.minecraftHome, "/config/GameSense Mod.cfg"));
-    }
 
     public void GameSenseMod(){
         if (minecraftDir != null) {
@@ -208,7 +203,7 @@ public class GameSenseMod
             }
         }
 
-        if (SSE3installed && config.ModEnabled){
+        if (SSE3installed){
             try {
                 // If we got a json string of address of localhost:<port> open a connection to it
                 String sse3Address;
@@ -233,52 +228,31 @@ public class GameSenseMod
                 e.printStackTrace();
                 logger.error("Something terrible happened creating JSONObject from coreProps.json.");
             }
-        }else{
         }
-
     }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        File modDir = new File(event.getModConfigurationDirectory(), "GameSense");
-        modDir.mkdirs();
-        modDir.mkdir();
-        File configVersionFile = new File(modDir, "config_version");
-        boolean configOutdated;
-        if (configVersionFile.exists()) {
-            try (FileReader reader = new FileReader(configVersionFile); Scanner scanner = new Scanner(reader)) {
-                try {
-                    configOutdated = scanner.nextInt() != CONFIG_VERSION;
-                } catch (NumberFormatException e) {
-                    configOutdated = true;
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            configOutdated = true;
+        ModConfig.initializeConfiguration();
+        if (isOtherModLoaded){
+            TipsAPI.addTips(tips -> {
+                tips.add("Do you have Steelseries Engine 3 already installed?");
+                tips.add("You can choose the colors of every game event is Steelseries Engine 3?");
+                tips.add("With the 'GameSense Mod' you can bind game events to your devices.");
+                tips.add("GameSense Mod is regularly updated and upgraded with new features.");
+                tips.add("Bugs of Gamesense Mod can be reported on the Curseforge-page.");
+            });
         }
-
-        if (configOutdated) {
-            File configFile = new File(event.getModConfigurationDirectory(), "GameSense Mod.cfg");
-            if (configFile.exists()) {
-                configFile.delete();
-            }
-            try (FileWriter writer = new FileWriter(configVersionFile)) {
-                writer.write(String.valueOf(CONFIG_VERSION));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        ConfigManager.sync(MODID, Config.Type.INSTANCE);
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-        ConnectToSSE3();
+        if (ModConfig.modEnabled){
+            ConnectToSSE3();
+        }
         if (event.getSide().isClient()) {
-            if (config.CheckForUpdates) {
+            if (ModConfig.CheckForUpdates) {
                 VersionChecker.updateCheck("GameSenseMod");
             }
         }
@@ -288,7 +262,9 @@ public class GameSenseMod
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        MinecraftForge.EVENT_BUS.register(new EventReceiver(Minecraft.getMinecraft()));
+        if (ModConfig.modEnabled){
+            MinecraftForge.EVENT_BUS.register(new EventReceiver(Minecraft.getMinecraft()));
+        }
     }
 
 }

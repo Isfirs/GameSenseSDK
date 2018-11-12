@@ -1,8 +1,6 @@
 package com.sse3.gamesense.internal;
 
 import com.sse3.gamesense.GameSenseMod;
-import com.sse3.gamesense.config.LoadConfig;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,8 +17,6 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.io.File;
-
 public class EventReceiver
 {
 
@@ -35,10 +31,6 @@ public class EventReceiver
     private EnumFacing lastFacing;
     private ItemStack lastHeldItem;
     private GameSenseMod gsmInst;
-    public static LoadConfig config;
-    static {
-        config = new LoadConfig(new File(Launch.minecraftHome, "/config/GameSense Mod.cfg"));
-    }
 
     public EventReceiver(Minecraft mcInst)
     {
