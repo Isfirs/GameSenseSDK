@@ -1,5 +1,9 @@
 # Changelog Gamesense #
 ## Minecraft 1.12.2 DEV ##
+
+### 1.12.9
+- Quick Fix (Fixed crash on startup, caused by postInit())
+
 ### 1.12.8
 - Fixed Issue (config not saved correctly)
 
