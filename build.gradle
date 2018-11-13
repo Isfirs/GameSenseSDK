@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'maven'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
-String modversion = "1.12.6"
+String modversion = "1.12.9"
 String minecraftversion = "1.12.2"
 String forgeversion = "14.23.5.2772"
 String modid = "gamesense"
@@ -88,9 +88,6 @@ jar
         {
             // put it in the root of the jar
             from configurations.includeInJar.collect { it.isDirectory() ? it : zipTree(it) }
-            manifest{
-                attributes 'FMLAT': 'gamesense_at.cfg'
-            }
         }
 
 processResources

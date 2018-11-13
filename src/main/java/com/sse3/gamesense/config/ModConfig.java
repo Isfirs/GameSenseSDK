@@ -23,6 +23,7 @@ public class ModConfig
     {
         private static final boolean modEnabled = true;
         private static final boolean CheckForUpdates = true;
+
     }
 
 

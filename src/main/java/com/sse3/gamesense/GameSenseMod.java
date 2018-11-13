@@ -262,9 +262,7 @@ public class GameSenseMod
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        if (ModConfig.modEnabled){
-            MinecraftForge.EVENT_BUS.register(new EventReceiver(Minecraft.getMinecraft()));
-        }
+        MinecraftForge.EVENT_BUS.register(new EventReceiver(Minecraft.getMinecraft()));
     }
 
 }
