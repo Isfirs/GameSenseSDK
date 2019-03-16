@@ -4,18 +4,14 @@ import com.sse3.gamesense.GameSenseMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemHoe;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.item.ItemTool;
+import net.minecraft.item.*;
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class EventReceiver
 {
@@ -133,27 +129,27 @@ public class EventReceiver
                     // Vanilla Minecraft Items
                     //
                     case "ItemAxe": {
-                        heldItemMaterialName = ((ItemTool) heldItem).getToolMaterialName();
+                        heldItemMaterialName = ((ItemTool) heldItem).getTier().getRepairMaterial().toString();
                         heldItemType = "AXE";
                         break;
                     }
                     case "ItemSpade": {
-                        heldItemMaterialName = ((ItemTool) heldItem).getToolMaterialName();
+                        heldItemMaterialName = ((ItemTool) heldItem).getTier().getRepairMaterial().toString();
                         heldItemType = "SHOVEL";
                         break;
                     }
                     case "ItemPickaxe": {
-                        heldItemMaterialName = ((ItemTool) heldItem).getToolMaterialName();
+                        heldItemMaterialName = ((ItemAxe) heldItem).getTier().getRepairMaterial().toString();
                         heldItemType = "PICKAXE";
                         break;
                     }
                     case "ItemHoe": {
-                        heldItemMaterialName = ((ItemHoe) heldItem).getMaterialName();
+                        heldItemMaterialName = ((ItemHoe) heldItem).getTier().getRepairMaterial().toString();
                         heldItemType = "HOE";
                         break;
                     }
                     case "ItemSword": {
-                        heldItemMaterialName = ((ItemSword) heldItem).getToolMaterialName();
+                        heldItemMaterialName = ((ItemSword) heldItem).getTier().getRepairMaterial().toString();
                         heldItemType = "SWORD";
                         break;
                     }

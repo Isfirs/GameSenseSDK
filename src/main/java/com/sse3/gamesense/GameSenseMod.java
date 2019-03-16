@@ -1,6 +1,7 @@
 package com.sse3.gamesense;
 
-import com.sse3.gamesense.config.ModConfig;
+import com.sse3.gamesense.config.Config;
+import com.sse3.gamesense.config.GameSenseModConfig;
 import com.sse3.gamesense.internal.EventHandler;
 import com.sse3.gamesense.internal.EventReceiver;
 import com.sse3.gamesense.lib.VersionChecker;
@@ -9,14 +10,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.FMLInjectionData;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
@@ -34,48 +36,34 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.Scanner;
 
-import net.darkhax.tips.TipsAPI;
-
-@Mod(modid = GameSenseMod.MODID,
-        name = GameSenseMod.MODNAME,
-        version = GameSenseMod.VERSION,
-        acceptedMinecraftVersions = GameSenseMod.MINECRAFTVERSIONS,
-        updateJSON = GameSenseMod.JSON,
-        guiFactory = GameSenseMod.GUIFACTORY
-)
-
+@Mod(GameSenseMod.MODID)
 public class GameSenseMod
 {
-    public static final String MODID = "%MODID%";
-    public static final String MODNAME = "%MODNAME%";
-    public static final String VERSION = "%VERSION%";
-    public static final String MINECRAFTVERSIONS = "%MINECRAFTVERSIONS%";
+    public static final String MODID = "gamesense";
+    public static final String VERSION = "1.12.10";
+    public static final String MINECRAFTVERSIONS = "1.13.2";
     public static final boolean beta = false;
-    public static final String JSON = "https://lateur.pro/mods/gamesense/latest.json";
-    static final Boolean isOtherModLoaded = Loader.isModLoaded("tips");
-    public static final String GUIFACTORY = "com.sse3.gamesense.lib.ModGuiFactory";
-
-    @Instance(MODID)
     public static GameSenseMod instance;
-    public static File minecraftDir;
-    public static String currentMcVersion;
 
-    //private HttpURLConnection sse3Connection = null;
-    private CloseableHttpClient sseClient = null;
-    private HttpPost ssePost = null;
+    private static CloseableHttpClient sseClient = null;
+    private static HttpPost ssePost = null;
     private Boolean isConnected = false;
     private long lastTick = 0;
 
     public static Logger logger = LogManager.getLogger("GameSense Mod");
 
-    public void GameSenseMod(){
-        if (minecraftDir != null) {
-            return;//get called twice, once for IFMLCallHook
-        }
-        minecraftDir = (File) FMLInjectionData.data()[6];
-        currentMcVersion = (String) FMLInjectionData.data()[4];
+    public GameSenseMod()
+    {
+        instance = this;
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.CLIENT_CONFIG);
+
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::initClient);
+
+        MinecraftForge.EVENT_BUS.register(this);
+
+        Config.loadConfig(Config.CLIENT_CONFIG, FMLPaths.CONFIGDIR.get().resolve("gamesense-client.toml"));
+
     }
 
     public void SendGameEvent(String eventName, int data, EntityPlayer player)
@@ -134,10 +122,6 @@ public class GameSenseMod
             response = sseClient.execute(ssePost);
 
             if(response != null) {
-                // Don't care about response?
-                //InputStream is = response.getEntity().getContent();
-
-                // reset the post so we can reuse it.
                 ssePost.reset();
             }
 
@@ -148,17 +132,17 @@ public class GameSenseMod
                 player.sendMessage(new TextComponentString("There was an error connecting to SteelSeries Engine 3"));
             }
         } catch (Exception e) {
-            // Likely a socket timeout w/ "Read timed out" which is fine, we just want to set & forget.
             //e.printStackTrace();
         }
 
     }
 
-    private boolean isSSE3installed(String jsonAddress){
+    private static boolean isSSE3installed(String jsonAddress)
+    {
         return !jsonAddress.isEmpty();
     }
 
-    private void ConnectToSSE3()
+    private static void ConnectToSSE3()
     {
         String jsonAddress;
         jsonAddress = "";
@@ -231,38 +215,17 @@ public class GameSenseMod
         }
     }
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        ModConfig.initializeConfiguration();
-        if (isOtherModLoaded){
-            TipsAPI.addTips(tips -> {
-                tips.add("Do you have Steelseries Engine 3 already installed?");
-                tips.add("You can choose the colors of every game event is Steelseries Engine 3?");
-                tips.add("With the 'GameSense Mod' you can bind game events to your devices.");
-                tips.add("GameSense Mod is regularly updated and upgraded with new features.");
-                tips.add("Bugs of Gamesense Mod can be reported on the Curseforge-page.");
-            });
-        }
-    }
-
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
+    @OnlyIn(Dist.CLIENT)
+    private void initClient(final FMLCommonSetupEvent event)
     {
-        if (ModConfig.modEnabled){
-            ConnectToSSE3();
+        if(GameSenseModConfig.modEnabled.get()){
+            GameSenseMod.ConnectToSSE3();
         }
-        if (event.getSide().isClient()) {
-            if (ModConfig.CheckForUpdates) {
-                VersionChecker.updateCheck("GameSenseMod");
-            }
+        if (GameSenseModConfig.CheckForUpdates.get()) {
+            VersionChecker.updateCheck(GameSenseMod.MODID);
         }
         MinecraftForge.EVENT_BUS.register(new EventHandler());
-    }
-
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        MinecraftForge.EVENT_BUS.register(new EventReceiver(Minecraft.getMinecraft()));
+        MinecraftForge.EVENT_BUS.register(new EventReceiver(Minecraft.getInstance()));
     }
 
 }

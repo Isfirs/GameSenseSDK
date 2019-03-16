@@ -2,7 +2,7 @@ package com.sse3.gamesense.internal;
 
 import com.sse3.gamesense.lib.VersionChecker;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 

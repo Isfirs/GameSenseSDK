@@ -4,8 +4,13 @@ import com.sse3.gamesense.GameSenseMod;
 
 import net.minecraft.client.Minecraft;
 
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.versioning.ComparableVersion;
+import net.minecraft.world.World;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,8 +60,11 @@ public class VersionChecker {
     }
 
     public static void tick() {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (!mc.inGameHasFocus) {
+        Minecraft mc = Minecraft.getInstance();
+        World world = mc.world;
+        EntityPlayer player = mc.player;
+
+        if (world == null && player == null) {
             return;
         }
 

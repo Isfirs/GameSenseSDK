@@ -1,0 +1,31 @@
+modLoader="javafml"
+loaderVersion="[25,)"
+issueTrackerURL="https://github.com/JayJay1989/GameSenseSDK/issues"
+logoFile="steelseries.png"
+
+[[mods]]
+modId="gamesense"
+version="1.12.10"
+displayName="GameSense Mod"
+displayURL="https://github.com/jayJay1989/GameSenseSDK/"
+credits="Thanks to MinecraftForge for providing the framework."
+authors="David Tibbetts, JayJay1989be"
+description='''
+This is a mod that sends events to SteelSeries Engine 3 GameSense.
+this mod is in early development of minecraft 1.13.x.
+any bug can be reported on Github or on Discord.
+'''
+
+[[dependencies.gamesense]]
+    modId="forge"
+    mandatory=true
+    versionRange="[25,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.gamesense]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.13.2]"
+    ordering="NONE"
+    side="BOTH"
