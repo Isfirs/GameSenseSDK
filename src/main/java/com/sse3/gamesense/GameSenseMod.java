@@ -34,7 +34,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.Scanner;
 
 import net.darkhax.tips.TipsAPI;
 
@@ -43,9 +42,9 @@ import net.darkhax.tips.TipsAPI;
         version = GameSenseMod.VERSION,
         acceptedMinecraftVersions = GameSenseMod.MINECRAFTVERSIONS,
         updateJSON = GameSenseMod.JSON,
-        guiFactory = GameSenseMod.GUIFACTORY
+        guiFactory = GameSenseMod.GUIFACTORY,
+        clientSideOnly = true
 )
-
 public class GameSenseMod
 {
     public static final String MODID = "%MODID%";
